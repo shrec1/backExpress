@@ -8,6 +8,7 @@ const cors = require('cors');
 const productosRoutes = require('./controllers/ProductosController');
 const usuariosRoutes = require('./controllers/UsuariosController');
 const bcrypt = require('bcryptjs');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 //const ObjectId = mongoose.Types.ObjectId;
 //const { ObjectId } = mongoose.Types;
 
@@ -30,47 +31,70 @@ app.use((req, res, next) => {
   next();
 });
 
+const uri = "mongodb+srv://ubedaroberto98:9Gl80hm8BnbU0mFo@cluster01.yghca.mongodb.net/?retryWrites=true&w=majority&appName=Cluster01";
 
-mongoose.connect('mongodb://127.0.0.1:27017/test')
-.then(() => console.log('MongoDB conectado'))
-.catch(err => console.error('Error conexion', err));
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
+
+// mongoose.connect('mongodb://127.0.0.1:27017/test')
+// .then(() => console.log('MongoDB conectado'))
+// .catch(err => console.error('Error conexion', err));
 
 
 async function hashPasswords() {
   try {
-      const users = await Usuarios.find({}); // Encuentra todos los usuarios
-      if (!users.length) {
-          console.log('No hay usuarios en la base de datos');
-          return;
-      }
+    const users = await Usuarios.find({}); // Encuentra todos los usuarios
+    if (!users.length) {
+      console.log('No hay usuarios en la base de datos');
+      return;
+    }
 
-      for (let user of users) {
-          // Si la contraseña ya está hasheada, puedes omitir el hasheo
-          if (!user.password.startsWith('$2b$') && !user.password.startsWith('$2a$')) { 
-              const hashedPassword = await bcrypt.hash(user.password, 10);
-              user.password = hashedPassword;
-              await user.save();
-              console.log(`Contraseña del usuario con id ${user._id} hasheada.`);
-          } else {
-              console.log(`La contraseña del usuario con id ${user._id} ya está hasheada.`);
-          }
+    for (let user of users) {
+      // Si la contraseña ya está hasheada, puedes omitir el hasheo
+      if (!user.password.startsWith('$2b$') && !user.password.startsWith('$2a$')) {
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        user.password = hashedPassword;
+        await user.save();
+        console.log(`Contraseña del usuario con id ${user._id} hasheada.`);
+      } else {
+        console.log(`La contraseña del usuario con id ${user._id} ya está hasheada.`);
       }
+    }
   } catch (err) {
-      console.error('Error al hashear contraseñas:', err);
+    console.error('Error al hashear contraseñas:', err);
   }
 }
 
 // Llamada al método de hasheo
 
-  
+
 
 
 // Ejemplo de uso
 
 
 
-app.use('/api/productos',productosRoutes);
-app.use('/api/usuarios',usuariosRoutes);
+app.use('/api/productos', productosRoutes);
+app.use('/api/usuarios', usuariosRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -81,6 +105,6 @@ app.get('/', (req, res) => {
 
 
 app.listen(port, () => {
-    console.log(`Servidor escuchando en http://localhost:${port}`);
+  console.log(`Servidor escuchando en http://localhost:${port}`);
 });
 
