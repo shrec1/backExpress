@@ -8,9 +8,13 @@ const cors = require('cors');
 const productosRoutes = require('./controllers/ProductosController');
 const usuariosRoutes = require('./controllers/UsuariosController');
 const bcrypt = require('bcryptjs');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+
 //const ObjectId = mongoose.Types.ObjectId;
 //const { ObjectId } = mongoose.Types;
+
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://ubedaroberto98:9Gl80hm8BnbU0mFo@cluster01.yghca.mongodb.net/?retryWrites=true&w=majority&appName=Cluster01";
+const uri2 = "mongodb+srv://user01:user01@cluster01.yghca.mongodb.net/?retryWrites=true&w=majority&appName=Cluster01";
 
 const Usuarios = require('./models/Usuarios');
 
@@ -31,33 +35,34 @@ app.use((req, res, next) => {
   next();
 });
 
-const uri = "mongodb+srv://ubedaroberto98:9Gl80hm8BnbU0mFo@cluster01.yghca.mongodb.net/?retryWrites=true&w=majority&appName=Cluster01";
+// const uri = "mongodb+srv://ubedaroberto98:9Gl80hm8BnbU0mFo@cluster01.yghca.mongodb.net/?retryWrites=true&w=majority&appName=Cluster01";
 
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+// const client = new MongoClient(uri2, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   }
+// });
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
+// async function run() {
+//   try {
+//     // Connect the client to the server	(optional starting in v4.7)
+//     await client.connect();
+//     // Send a ping to confirm a successful connection
+//     await client.db("admin").command({ ping: 1 });
+//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+//   } finally {
+//     // Ensures that the client will close when you finish/error
+//     await client.close();
+//   }
+// }
+// run().catch(console.dir);
 
 // mongoose.connect('mongodb://127.0.0.1:27017/test')
-// .then(() => console.log('MongoDB conectado'))
-// .catch(err => console.error('Error conexion', err));
+mongoose.connect('mongodb+srv://user01:user01@cluster01.yghca.mongodb.net/?retryWrites=true&w=majority&appName=Cluster01')
+  .then(() => console.log('MongoDB conectado'))
+  .catch(err => console.error('Error conexion', err));
 
 
 async function hashPasswords() {
